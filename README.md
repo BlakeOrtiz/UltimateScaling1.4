@@ -1,6 +1,6 @@
 # Ultimate Scaling
 
-## Created for Terraria's 1.3 tModLoader
+## Created for Terraria's 1.4 tModLoader
 This mod was made by the knowledge gained and helpful community of developers from [RootKit](https://rootkit.org).
 
 Future mods will be released in the future, as well as updates to this one. Feel free to use any of the mods posted as references or to understand concepts of programming and C# specific concepts as well.
