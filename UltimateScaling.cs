@@ -2,14 +2,56 @@ using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
-
 
 namespace UltimateScaling
 {
 	// Need one class that extends "Mod"
 	public class UltimateScaling : Mod
 	{
+		// Dictionary of all prefixes that increase or decrease damage
+		public static Dictionary<int, int> prefixes = new Dictionary<int, int>()
+		{
+			{ PrefixID.Broken, -30 },
+			{ PrefixID.Annoying, -20 },
+			{ PrefixID.Terrible, -15 },
+            { PrefixID.Dull, -15 },
+			{ PrefixID.Awful, -15 },
+			{ PrefixID.Damaged, -15 },
+			{ PrefixID.Frenzying, -15 },
+			{ PrefixID.Shameful, -10 },
+            { PrefixID.Ignorant, -10 },
+			{ PrefixID.Deranged, -10 },
+			{ PrefixID.Shoddy, -10 },
+			{ PrefixID.Manic, -10},
+            { PrefixID.Dangerous, 5 },
+            { PrefixID.Bulky, 5 },
+			{ PrefixID.Nasty, 5 },
+			{ PrefixID.Unpleasant, 5 },
+			{ PrefixID.Murderous, 7 },
+			{ PrefixID.Savage, 10 },
+			{ PrefixID.Pointy, 10 },
+			{ PrefixID.Sighted, 10 },
+			{ PrefixID.Deadly, 10 },
+			{ PrefixID.Staunch, 10 },
+			{ PrefixID.Mystic, 10 },
+			{ PrefixID.Intense, 10 },
+			{ PrefixID.Celestial, 10 },
+			{ PrefixID.Superior, 10 },
+			{ PrefixID.Deadly2, 10 },
+			{ PrefixID.Hurtful, 10 },
+			{ PrefixID.Sharp, 15 },
+			{ PrefixID.Powerful, 15 },
+			{ PrefixID.Masterful, 15 },
+			{ PrefixID.Furious, 15 },
+			{ PrefixID.Godly, 15 },
+			{ PrefixID.Demonic, 15 },
+			{ PrefixID.Legendary, 15 },
+			{ PrefixID.Unreal, 15 },
+			{ PrefixID.Mythical, 15 },
+			{ PrefixID.Ruthless, 18 }
+		};
 	}
 
 	// Allows classes to save and share the variables that are made here
@@ -39,9 +81,32 @@ namespace UltimateScaling
 			flat += BoostDmg(item);
 		}
 
+		private static int GetTrueDmg(Item item)
+        {
+			if (item == null) return item.damage;
+
+			var prefixes = UltimateScaling.prefixes;
+			int id = item.prefix;
+			int value;
+			int adjust;
+
+			if (prefixes.ContainsKey(id))
+            {
+				bool hasValue = prefixes.TryGetValue(id, out value);
+				if (hasValue)
+                {
+					adjust = -value;
+					return item.damage + (item.damage * adjust) / 100;
+				}
+            }
+			return item.damage;
+		}
+
 		// Check the sent item to determine total boss kills and if it falls under DPS value to boost
 		private static float BoostDmg(Item item)
 		{
+			if (item == null) return 0f;
+
 			List<bool> bosses = new()
 			{
 				NPC.downedSlimeKing,
@@ -60,7 +125,6 @@ namespace UltimateScaling
 				NPC.downedEmpressOfLight,
 				NPC.downedMoonlord
 			};
-
 			float boost = 0.5f;
 			int total = 0;
 			int max = bosses.Count;
@@ -82,7 +146,7 @@ namespace UltimateScaling
 			}
 
 			// Calculate the DPS after adding the boost and if it "outscales" the world progress
-			if ((item.damage * boost) * (60 / item.useTime) >= Math.Pow(total, 3) / 1.75)
+			if ((GetTrueDmg(item) * boost) * (60 / item.useTime) >= total * total * total / 1.75)
 			{
 				ShowDamage.IsBoosted = false;
 				return 0f;
@@ -112,8 +176,6 @@ namespace UltimateScaling
 			{
 					var curBoost = new TooltipLine(Mod, "Boost", "[Boost] +" + $"{dmg} Damage");
 					var curDPS = new TooltipLine(Mod, "DPS", "[DPS] " + $"{dps}/s");
-					//curBoost.overrideColor = Color.Yellow;
-					//curDPS.overrideColor = Color.Yellow;
 					tooltips.Add(curBoost);
 					tooltips.Add(curDPS);
 			}
