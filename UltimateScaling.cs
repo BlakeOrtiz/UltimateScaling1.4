@@ -81,6 +81,7 @@ namespace UltimateScaling
 			flat += BoostDmg(item);
 		}
 
+		// Get the Weapon's Damage before its prefix is applied
 		private static int GetTrueDmg(Item item)
         {
 			if (item == null) return item.damage;
@@ -166,7 +167,7 @@ namespace UltimateScaling
 			int dmg = 0;
 			float dps = item.damage * (60 / item.useTime);
 
-			if (ShowDamage.IsBoosted)
+			if (ShowDamage.IsBoosted && item.damage > 0)
             {
 				dmg = (int)ShowDamage.BoostedDmg;
 				dps = (dmg + item.damage) * (60 / item.useTime);
