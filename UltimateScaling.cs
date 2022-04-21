@@ -78,7 +78,10 @@ namespace UltimateScaling
 		// Send the item to be checked if it can be boosted
 		public override void ModifyWeaponDamage(Item item, ref StatModifier damage, ref float flat)
 		{
-			flat += BoostDmg(item);
+			if (item.damage > 0)
+			{
+				flat += BoostDmg(item);
+			}
 		}
 
 		// Get the Weapon's Damage before its prefix is applied
@@ -164,21 +167,21 @@ namespace UltimateScaling
 	{
 		public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
 		{
-			int dmg = 0;
-			float dps = item.damage * (60 / item.useTime);
-
-			if (ShowDamage.IsBoosted && item.damage > 0)
-            {
-				dmg = (int)ShowDamage.BoostedDmg;
-				dps = (dmg + item.damage) * (60 / item.useTime);
-			}
-			
 			if (item.damage > 0)
 			{
-					var curBoost = new TooltipLine(Mod, "Boost", "[Boost] +" + $"{dmg} Damage");
-					var curDPS = new TooltipLine(Mod, "DPS", "[DPS] " + $"{dps}/s");
-					tooltips.Add(curBoost);
-					tooltips.Add(curDPS);
+				int dmg = 0;
+				float dps = item.damage * (60 / item.useTime);
+
+				if (ShowDamage.IsBoosted)
+				{
+					dmg = (int)ShowDamage.BoostedDmg;
+					dps = (dmg + item.damage) * (60 / item.useTime);
+				}
+
+				var curBoost = new TooltipLine(Mod, "Boost", "[Boost] +" + $"{dmg} Damage");
+				var curDPS = new TooltipLine(Mod, "DPS", "[DPS] " + $"{dps}/s");
+				tooltips.Add(curBoost);
+				tooltips.Add(curDPS);
 			}
 		}
 	}
