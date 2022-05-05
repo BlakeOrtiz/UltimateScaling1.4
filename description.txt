@@ -35,6 +35,9 @@ Thanks:
 
 Update Log:
 ----------
+V1.2.1
+* Updated for latest TModLoader version
+----------
 V1.2.0
 * Weapon use time is now corrected before prefix to allow better boosting
 ----------
