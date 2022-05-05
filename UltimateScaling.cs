@@ -16,17 +16,17 @@ namespace UltimateScaling
 			{ PrefixID.Broken, -30 },
 			{ PrefixID.Annoying, -20 },
 			{ PrefixID.Terrible, -15 },
-            { PrefixID.Dull, -15 },
+			{ PrefixID.Dull, -15 },
 			{ PrefixID.Awful, -15 },
 			{ PrefixID.Damaged, -15 },
 			{ PrefixID.Frenzying, -15 },
 			{ PrefixID.Shameful, -10 },
-            { PrefixID.Ignorant, -10 },
+			{ PrefixID.Ignorant, -10 },
 			{ PrefixID.Deranged, -10 },
 			{ PrefixID.Shoddy, -10 },
 			{ PrefixID.Manic, -10},
-            { PrefixID.Dangerous, 5 },
-            { PrefixID.Bulky, 5 },
+			{ PrefixID.Dangerous, 5 },
+			{ PrefixID.Bulky, 5 },
 			{ PrefixID.Nasty, 5 },
 			{ PrefixID.Unpleasant, 5 },
 			{ PrefixID.Murderous, 7 },
@@ -67,10 +67,10 @@ namespace UltimateScaling
 			{ PrefixID.Celestial, -10 },
 			{ PrefixID.Lazy, -8 },
 			{ PrefixID.Deadly, 5 },
-            { PrefixID.Nimble, 5 },
+			{ PrefixID.Nimble, 5 },
 			{ PrefixID.Murderous, 6 },
 			{ PrefixID.Hasty, 10 },
-            { PrefixID.Taboo, 10 },
+			{ PrefixID.Taboo, 10 },
 			{ PrefixID.Quick, 10 },
 			{ PrefixID.Deadly2, 10 },
 			{ PrefixID.Agile, 10 },
@@ -80,7 +80,7 @@ namespace UltimateScaling
 			{ PrefixID.Unreal, 10 },
 			{ PrefixID.Mythical, 10 },
 			{ PrefixID.Light, 15 },
-            { PrefixID.Rapid, 15 },
+			{ PrefixID.Rapid, 15 },
 			{ PrefixID.Frenzying, 15 }
 		};
 	}
@@ -97,25 +97,27 @@ namespace UltimateScaling
 
 		private static bool isBoosted;
 		public static bool IsBoosted
-        {
+		{
 			get { return isBoosted; }
 			set { isBoosted = value; }
-        }
+		}
 	}
 
 	//Extends "ModPlayer" in order to use ModifyWeaponDamage
 	public class BoostDamage : ModPlayer
 	{
 		// Send the item to be checked if it can be boosted
-		public override void ModifyWeaponDamage(Item item, ref StatModifier damage, ref float flat)
+
+		public override void ModifyWeaponDamage(Item item, ref StatModifier damage)
 		{
 			if (item.damage > 0)
 			{
-				flat += BoostDmg(item);
+				damage = new StatModifier(0f, 0f, item.damage + BoostDmg(item));
 			}
+			base.ModifyWeaponDamage(item, ref damage);
 		}
 
-		// Get the Weapon's Damage before its prefix is applied
+		// Get the Weapon's Damage before the prefix modifier
 		private static int GetTrueDmg(Item item)
 		{
 			if (item == null) return item.damage;
@@ -124,31 +126,33 @@ namespace UltimateScaling
 			int attack = CheckPrefix(attackPrefixes, item);
 			
 			if (attack > 0)
-            {
+			{
 				return item.damage + ((item.damage * attack) / 100);
 			}
 			return item.damage;
 		}
 
+		// Get the Weapon's 'useItem' speed before the prefix modifier
 		private static int GetTrueSpeed(Item item)
-        {
+		{
 			var speedPrefixes = UltimateScaling.speedPrefixes;
 			int speed = CheckPrefix(speedPrefixes, item);
 
 			if (speed > 0)
-            {
+			{
 				return item.useTime + ((item.useTime * speed) / 100);
 			}
 			return item.useTime;
 		}
 
+		// Check the prefix of the item
 		private static int CheckPrefix(dynamic prefix, Item item)
 		{
 			int id = item.prefix;
 			int value;
 
 			if (prefix.ContainsKey(id))
-            {
+			{
 				bool has = prefix.TryGetValue(id, out value);
 				if (has)
 				{
@@ -217,24 +221,24 @@ namespace UltimateScaling
 	// Add Tooltips to show current boost of weapons and add a simple DPS line
 	public class ShowBoostedDamage : GlobalItem
 	{
-		public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
-		{
-			if (item.damage > 0)
-			{
-				int dmg = 0;
-				float dps = item.damage * (60 / item.useTime);
+        public override void ModifyTooltips(Item item, List<TooltipLine> tooltips)
+        {
+            if (item.damage > 0)
+            {
+                int dmg = 0;
+                float dps = item.damage * (60 / item.useTime);
 
-				if (ShowDamage.IsBoosted)
-				{
-					dmg = (int)ShowDamage.BoostedDmg;
-					dps = (dmg + item.damage) * (60 / item.useTime);
-				}
+                if (ShowDamage.IsBoosted)
+                {
+                    dmg = (int)ShowDamage.BoostedDmg;
+                    dps = (dmg + item.damage) * (60 / item.useTime);
+                }
 
-				var curBoost = new TooltipLine(Mod, "Boost", "[Boost] +" + $"{dmg} Damage");
-				var curDPS = new TooltipLine(Mod, "DPS", "[DPS] " + $"{dps}/s");
-				tooltips.Add(curBoost);
-				tooltips.Add(curDPS);
-			}
-		}
-	}
+                var curBoost = new TooltipLine(Mod, "Boost", "[Boost] +" + $"{dmg} Damage");
+                var curDPS = new TooltipLine(Mod, "DPS", "[DPS] " + $"{dps}/s");
+                tooltips.Add(curBoost);
+                tooltips.Add(curDPS);
+            }
+        }
+    }
 }
