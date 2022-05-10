@@ -112,7 +112,7 @@ namespace UltimateScaling
 		{
 			if (item.damage > 0)
 			{
-				damage = new StatModifier(0f, 0f, item.damage + BoostDmg(item));
+				damage.Flat += BoostDmg(item);
 			}
 			base.ModifyWeaponDamage(item, ref damage);
 		}
