@@ -35,6 +35,9 @@ Thanks:
 
 Update Log:
 ----------
+V1.2.2
+* Fixed bug that was breaking all other damage increases
+----------
 V1.2.1
 * Updated for latest TModLoader version
 ----------
